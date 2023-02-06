@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "",
+    "build": "tsc",
     "test": "mocha .",
     "coverage": "nyc npm run test"
   },
