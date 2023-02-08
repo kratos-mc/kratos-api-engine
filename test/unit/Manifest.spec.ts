@@ -1,5 +1,10 @@
+import { VersionManifestUtils } from "./../../src/Manifest";
 import { expect } from "chai";
 import { Manifest } from "../../src/Index";
+import {
+  fetchVersionManifestV2,
+  GameVersionManifest,
+} from "../../src/Manifest";
 
 describe("[unit] manifest fetch test", () => {
   it("should response a game version manifest with full property", async () => {
@@ -30,5 +35,27 @@ describe("[unit] manifest fetch test", () => {
     expect(firstGameVersion.sha1).to.be.a("string");
     expect(firstGameVersion.complianceLevel).to.be.a("number");
     // expect(firstGameVersion.time)
+  });
+});
+
+describe("[unit] manifest utils", () => {
+  let manifest: GameVersionManifest;
+
+  before(async () => {
+    manifest = await fetchVersionManifestV2();
+
+    return;
+  });
+
+  it(`should throw with undefined parameter`, () => {
+    expect(() => {
+      new VersionManifestUtils(undefined as unknown as GameVersionManifest);
+    }).to.throw("The manifest parameter cannot be undefined.");
+  });
+
+  it("should return latest release", () => {
+    expect(new VersionManifestUtils(manifest).getLatestRelease()).to.eq(
+      manifest.latest.release
+    );
   });
 });

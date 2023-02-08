@@ -50,3 +50,22 @@ export async function fetchVersionManifestV2(): Promise<GameVersionManifest> {
   );
   return response.body;
 }
+
+export class VersionManifestUtils {
+  private manifest: GameVersionManifest;
+
+  constructor(manifest: GameVersionManifest) {
+    if (manifest === undefined) {
+      throw new Error("The manifest parameter cannot be undefined.");
+    }
+    this.manifest = manifest;
+  }
+  /**
+   * Extract the manifest latest release.
+   *
+   * @returns the latest release
+   */
+  public getLatestRelease() {
+    return this.manifest.latest.release;
+  }
+}
