@@ -1,5 +1,5 @@
 module.exports = {
-  spec: ["test/**/*.spec.ts"],
+  spec: ["test/**/*.spec.*"],
   reporter: "spec",
   require: ["ts-node/register"],
 };
