@@ -12,8 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/kratos-mc/kratos-api-engine.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "minecraft-api-library",
+    "minecraft",
+    "minecraft-launcher"
+  ],
+  "author": "Player_Nguyen",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kratos-mc/kratos-api-engine/issues"
