@@ -1,9 +1,21 @@
-import fse from "fs-extra";
 import needle from "needle";
-import { MinecraftSemver } from "./Semver";
+import { MinecraftVersionId } from "./Semver";
 
-export type GameVersionType = "release" | "snapshot" | "alpha" | "old_alpha";
+export type GameManifestVersionType =
+  | "release"
+  | "snapshot"
+  | "alpha"
+  | "old_alpha";
 
+export interface GameManifestVersion {
+  id: MinecraftVersionId;
+  type: GameManifestVersionType;
+  url: string;
+  time: Date;
+  releaseTime: Date;
+  sha1: string;
+  complianceLevel: number;
+}
 /**
  * The Minecraft game version manifest which depends on `version_manifest_v2.json`.
  *
@@ -16,12 +28,13 @@ export interface GameVersionManifest {
     /**
      * The latest release version of Minecraft, as know as the primary game version.
      */
-    release: MinecraftSemver;
+    release: MinecraftVersionId;
     /**
      * The latest snapshot release of Minecraft.
      */
-    snapshot: MinecraftSemver;
+    snapshot: MinecraftVersionId;
   };
+  versions: GameManifestVersion[];
 }
 
 /**
