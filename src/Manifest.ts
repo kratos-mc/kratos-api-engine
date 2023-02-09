@@ -92,11 +92,7 @@ export class VersionManifestUtils {
    * @returns a map that contains all manifest versions
    */
   public getVersionsMap() {
-    const map: Map<string, GameManifestVersion> = new Map();
-    for (const item of this.manifest.versions) {
-      map.set(item.id, item);
-    }
-    return map;
+    return this.searchMap;
   }
 
   /**
