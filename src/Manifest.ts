@@ -63,7 +63,10 @@ export class VersionManifestUtils {
       throw new Error("The manifest parameter cannot be undefined.");
     }
     this.manifest = manifest;
-    this.searchMap = this.getVersionsMap();
+    this.searchMap = new Map();
+    for (const version of manifest.versions) {
+      this.searchMap.set(version.id, version);
+    }
   }
 
   /**
