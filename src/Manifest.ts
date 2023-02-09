@@ -50,3 +50,98 @@ export async function fetchVersionManifestV2(): Promise<GameVersionManifest> {
   );
   return response.body;
 }
+
+/**
+ * The utility class for solve version manifest problem much easier and faster.
+ */
+export class VersionManifestUtils {
+  private manifest: GameVersionManifest;
+  private searchMap: Map<string, GameManifestVersion>;
+
+  constructor(manifest: GameVersionManifest) {
+    if (manifest === undefined) {
+      throw new Error("The manifest parameter cannot be undefined.");
+    }
+    this.manifest = manifest;
+    this.searchMap = new Map();
+    for (const version of manifest.versions) {
+      this.searchMap.set(version.id, version);
+    }
+  }
+
+  /**
+   * Extract the manifest latest release version id.
+   *
+   * @since 1.0.0
+   * @returns the latest release version id
+   */
+  public getLatestRelease() {
+    return this.manifest.latest.release;
+  }
+
+  /**
+   * Extract the manifest latest snapshot version.
+   *
+   * @since 1.0.0
+   * @returns the latest snapshot version id
+   */
+  public getLatestSnapshot() {
+    return this.manifest.latest.snapshot;
+  }
+
+  /**
+   * Export the versions from manifest as a Map.
+   * @since 1.0.0
+   * @returns a map that contains all manifest versions
+   */
+  public getVersionsMap() {
+    return this.searchMap;
+  }
+
+  /**
+   * Get the game version property from game version id.
+   * @since 1.0.0
+   * @param id an id of the game version
+   * @returns a GameManifestVersion if the version is exist. Otherwise, undefined will return
+   */
+  public getVersionFromId(id: string) {
+    return this.searchMap.get(id);
+  }
+
+  /**
+   * Iterate over the version list and search for matching items. If the pattern is a string,
+   * using `includes` to compare. If the `pattern` is RegExp, using `match`.
+   *
+   *  @since 1.0.0
+   * @param patterns a string or regexp pattern that match with version id.
+   * @returns a list of items that match to pattern
+   */
+  public searchVersion(pattern: RegExp | string) {
+    if (typeof pattern !== "string" && !(pattern instanceof RegExp)) {
+      throw new Error(
+        "Invalid type of pattern. It must be a string or RegExp."
+      );
+    }
+    const search: GameManifestVersion[] = [];
+    for (const version of this.getVersionsArray()) {
+      if (
+        (typeof pattern === "string" && version.id.includes(pattern)) ||
+        (pattern instanceof RegExp && pattern.test(version.id))
+      ) {
+        search.push(version);
+      }
+    }
+
+    return search;
+  }
+
+  /**
+   * Get all version items as an array by looking the manifest.versions.
+   *
+   * @since 1.0.0
+   * @returns an array contains all versions
+   */
+  public getVersionsArray() {
+    return this.manifest.versions;
+  }
+}
