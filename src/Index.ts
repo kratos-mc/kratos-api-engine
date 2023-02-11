@@ -1,3 +1,4 @@
 import * as Manifest from "./Manifest";
+import * as Version from "./Version";
 
-export { Manifest };
+export { Manifest, Version };
