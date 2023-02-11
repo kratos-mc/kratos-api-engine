@@ -108,7 +108,15 @@ export interface GameVersionResponse {
   type: "release" | "snapshot" | "old_alpha";
 }
 
-export async function getVersion(gameVersion: GameManifestVersion) {
+/**
+ * Receives a Minecraft version from manifest version profile.
+ *
+ * @param gameVersion a manifest game version which contains version url to fetch
+ * @returns a response of the version which fetch from url
+ */
+export async function getVersion(
+  gameVersion: GameManifestVersion
+): Promise<GameVersionResponse> {
   const response = await needle("get", gameVersion.url);
   return response.body;
 }
