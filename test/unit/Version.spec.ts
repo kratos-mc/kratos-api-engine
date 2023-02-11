@@ -1,6 +1,6 @@
 import { AssetIndexReference } from "./../../src/Asset";
 import { expect, version } from "chai";
-import { Version } from "../../src/Index";
+
 import {
   fetchVersionManifestV2,
   GameVersionManifest,
@@ -94,5 +94,13 @@ describe("[unit] GameVersionResponseUtils -", () => {
     expect(assetIndex.size).to.be.a("number");
     expect(assetIndex.totalSize).to.be.a("number");
     expect(assetIndex.url).to.be.a("string");
+  });
+
+  it("should return asset index contents", async () => {
+    const assetIndexContentsResponse = await new GameVersionResponseUtils(
+      version
+    ).getAssetIndexContents();
+    expect(assetIndexContentsResponse).to.have.ownProperty("objects");
+    expect(assetIndexContentsResponse.objects).to.not.be.undefined;
   });
 });

@@ -116,6 +116,42 @@ export async function getVersion(
   return response.body;
 }
 
+/**
+ * Represents a content inside asset index files.
+ * The asset index file, in general, have a format likes:
+ *
+ * ```json
+ * "objects": {
+ *    "path/to/asset_name": {
+ *        "hash": "..."
+ *         "size": 123
+ *     },
+ *     "path/to/asset_name_2": {
+ *        "hash": "..."
+ *         "size": 456
+ *     },
+ * }
+ * ```
+ */
+export interface AssetIndexContent {
+  objects: {
+    [key: string]: {
+      hash: string;
+      size: number;
+    };
+  };
+}
+
+/**
+ * Represents a utility class for GameVersionResponse.
+ *
+ * ```javascript
+ * let response: GameVersionResponse = //...
+ * let utils = new GameVersionResponseUtils(response);
+ * ```
+ *
+ * This utility class provides many shorter API to resolve assets, libraries, runtime assets, ...
+ */
 export class GameVersionResponseUtils {
   private response: GameVersionResponse;
 
@@ -148,7 +184,17 @@ export class GameVersionResponseUtils {
     return this.response.assetIndex;
   }
 
-  public async getAssetIndexContents(options: NeedleOptions) {
+  /**
+   * Get asset index content from the raw asset index as reference.
+   *
+   * @param options a request, response options
+   * @returns a received asset index from mojang api
+   * @see NeedleOptions an options
+   * @see AssetIndexContent a asset index content interface
+   */
+  public async getAssetIndexContents(
+    options?: NeedleOptions
+  ): Promise<AssetIndexContent> {
     return await getAssetIndexFromReference(this.getAssetIndex(), options);
   }
 }

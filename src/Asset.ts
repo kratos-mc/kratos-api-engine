@@ -1,3 +1,4 @@
+import { AssetIndexContent } from "./Version";
 import needle, { NeedleOptions } from "needle";
 
 /**
@@ -31,7 +32,7 @@ export interface AssetIndexReference {
 export async function getAssetIndexFromReference(
   reference: AssetIndexReference,
   options?: NeedleOptions
-) {
+): Promise<AssetIndexContent> {
   const response = await needle("get", reference.url, options);
 
   return response.body;
