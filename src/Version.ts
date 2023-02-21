@@ -60,6 +60,8 @@ export interface GameVersionOperatingSystem {
   arch?: GameVersionOperatingSystemArch;
 }
 
+export type GameVersionReleaseType = "release" | "snapshot" | "old_alpha";
+
 export interface GameVersionResponse {
   arguments: {
     game: [string | GameVersionGameArguments];
@@ -102,7 +104,7 @@ export interface GameVersionResponse {
   minimumLauncherVersion: number;
   releaseTime: Date;
   time: Date;
-  type: "release" | "snapshot" | "old_alpha";
+  type: GameVersionReleaseType;
 }
 
 /**
@@ -277,5 +279,9 @@ export class GameVersionResponseUtils {
 
   public getMainClass() {
     return this.response.mainClass;
+  }
+
+  public getType() {
+    return this.response.type;
   }
 }

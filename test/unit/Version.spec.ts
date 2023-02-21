@@ -144,4 +144,11 @@ describe("[unit] GameVersionResponseUtils -", () => {
 
     expect(mainClass).includes("net.minecraft.client.main");
   });
+
+  it("should return release type", async () => {
+    const assetIndexContentsResponse = await new GameVersionResponseUtils(
+      version
+    );
+    expect(assetIndexContentsResponse.getType()).to.be.a("string");
+  });
 });
