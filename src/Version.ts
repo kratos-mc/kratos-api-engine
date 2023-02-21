@@ -48,14 +48,16 @@ export interface GameVersionLibraryArtifact {
 }
 
 export interface GameVersionLibraryRule {
-  action: string | "allow" | "deny";
+  action: GameVersionAction;
   os: GameVersionOperatingSystem;
 }
 
+export type GameVersionOperatingSystemName = "osx" | "linux" | "windows";
+export type GameVersionOperatingSystemArch = "x64" | "x86";
 export interface GameVersionOperatingSystem {
-  name?: "osx" | "linux" | "windows";
+  name?: GameVersionOperatingSystemName;
   version?: RegExp;
-  arch?: string;
+  arch?: GameVersionOperatingSystemArch;
 }
 
 export interface GameVersionResponse {
@@ -114,6 +116,12 @@ export async function getVersion(
 ): Promise<GameVersionResponse> {
   const response = await needle("get", gameVersion.url);
   return response.body;
+}
+
+export interface RequestLibraryOptions {
+  platform?: NodeJS.Platform;
+  arch?: "x64" | "x86";
+  version?: string;
 }
 
 /**
@@ -189,12 +197,85 @@ export class GameVersionResponseUtils {
    *
    * @param options a request, response options
    * @returns a received asset index from mojang api
-   * @see NeedleOptions an options
+   * @see NeedleOptions an options of needle library
    * @see AssetIndexContent a asset index content interface
    */
   public async getAssetIndexContents(
     options?: NeedleOptions
   ): Promise<AssetIndexContent> {
     return await getAssetIndexFromReference(this.getAssetIndex(), options);
+  }
+  /**
+   * Test whether or not the library rule is match
+   *
+   * @param libraryRule a library rule to test
+   * @param os an operating system name
+   * @param arch architechture of the system
+   * @param version a version of the operating system
+   * @returns true if the rule is compatible, false otherwise
+   */
+  private assertLibraryRuleCompatibility(
+    libraryRule: GameVersionLibraryRule,
+    os?: GameVersionOperatingSystemName,
+    arch?: GameVersionOperatingSystemArch,
+    version?: string
+  ) {
+    // If the os name is not compatible
+    if (os !== undefined && libraryRule.os.name !== os) return false;
+
+    // If the arch is not compatible
+    if (arch !== undefined && libraryRule.os.arch !== arch) return false;
+
+    // If the version is not match
+    if (version !== undefined && !libraryRule.os.version?.test(version))
+      return false;
+
+    return true;
+  }
+
+  /**
+   * Get all libraries of the current version package
+   *
+   * @param options an options for getting match libraries
+   * @returns the list of library based on provided options
+   */
+  public getLibraries(options?: RequestLibraryOptions) {
+    // Return a whole libraries if options is not defined
+    if (options === undefined) {
+      return this.response.libraries;
+    }
+
+    // Otherwise, find any match case or non-conditional case
+    return this.response.libraries
+      .map((library) => {
+        // If the library have no rule, accept it
+        if (!library.rules) {
+          return library;
+        }
+
+        return library.rules.every((rule) => {
+          const predicate =
+            rule.action === "allow" &&
+            this.assertLibraryRuleCompatibility(
+              rule,
+              options.platform === "darwin"
+                ? "osx"
+                : options.platform === "linux"
+                ? "linux"
+                : "windows",
+              options.arch,
+              options.version
+            );
+
+          return predicate;
+        })
+          ? library
+          : null;
+      })
+      .filter((item) => item !== null);
+  }
+
+  public getMainClass() {
+    return this.response.mainClass;
   }
 }

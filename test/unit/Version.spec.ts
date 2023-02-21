@@ -10,6 +10,7 @@ import {
   GameVersionResponse,
   GameVersionResponseUtils,
   getVersion,
+  RequestLibraryOptions,
 } from "../../src/Version";
 import fse from "fs-extra";
 
@@ -102,5 +103,45 @@ describe("[unit] GameVersionResponseUtils -", () => {
     ).getAssetIndexContents();
     expect(assetIndexContentsResponse).to.have.ownProperty("objects");
     expect(assetIndexContentsResponse.objects).to.not.be.undefined;
+  });
+
+  it("should return all library if options is not defined ", async () => {
+    const assetIndexContentsResponse = await new GameVersionResponseUtils(
+      version
+    );
+
+    // console.log(assetIndexContentsResponse.getLibraries());
+    const libraries = assetIndexContentsResponse.getLibraries();
+    expect(libraries).to.be.an("array");
+    expect(libraries.length).to.be.greaterThan(0);
+  });
+
+  it("should return allowed libraries based on the provided options", async () => {
+    const options: RequestLibraryOptions = {
+      platform: "win32",
+    };
+
+    const assetIndexContentsResponse = await new GameVersionResponseUtils(
+      version
+    );
+
+    const libraries = assetIndexContentsResponse.getLibraries(options);
+    expect(libraries).to.be.an("array");
+    expect(libraries.length).to.be.greaterThan(0);
+
+    libraries.some((library) => {
+      library?.name?.includes("windows");
+    });
+  });
+
+  it("should return mainClass", async () => {
+    const assetIndexContentsResponse = await new GameVersionResponseUtils(
+      version
+    );
+
+    const mainClass = assetIndexContentsResponse.getMainClass();
+    expect(mainClass).to.be.a("string");
+
+    expect(mainClass).includes("net.minecraft.client.main");
   });
 });
